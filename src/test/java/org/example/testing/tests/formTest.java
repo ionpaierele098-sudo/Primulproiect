@@ -1,103 +1,65 @@
-package pom;
+package org.example.testing.tests;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
+import Utils.SeleniumDriver;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
+import pom.DemoqaForm;
 
-public class DemoqaForm {
-    private WebDriver driver;
+public class formTest {
+    private static final Logger logger = LogManager.getLogger(formTest.class);
 
-    public DemoqaForm(WebDriver driver) {
-        this.driver = driver;
+    public static WebDriver driver;
+    public static String URI = "https://demoqa.com/automation-practice-form";
+    public static String FIRST_NAME = "Paierele";
+    public static String LAST_NAME = "Ion";
+    public static String EMAIL = "ionpaierele098@gmail.com";
+    public static String GENDER = "Male";
+    public static String NUMBER = "0600000000";
+    public static String BIRTH_DATE = "11 Jul 2007";
+    public static String SUBJECTS = "Maths";
+    public static String HOBBY = "Sports";
+    public static String STATE = "Rajasthan";
+    public static String CITY = "Jaipur";
+
+    @BeforeTest
+    public void beforeTest() {
+        driver = SeleniumDriver.getAutoDriver();
     }
 
-    // Metodă pentru a ascunde sau elimina bannerele și reclamele care blochează elementele
-    public void closeAdvert() {
-        try {
-            JavascriptExecutor js = (JavascriptExecutor) driver;
-            js.executeScript("const ads = document.querySelectorAll('#fixedban, footer, iframe'); ads.forEach(ad => ad.remove());");
-        } catch (Exception e) {
-            // Ignoră dacă elementele nu sunt găsite
+    @Test
+    public void formTest() {
+        logger.info("Start test");
+        driver.get(URI);
+        driver.manage().window().maximize();
+
+        DemoqaForm form = new DemoqaForm(driver);
+
+        // Remove ads and footer to prevent ElementClickInterceptedException
+        form.closeAdvert();
+
+        form.setFirstName(FIRST_NAME);
+        form.setLastName(LAST_NAME);
+        form.setUserEmail(EMAIL);
+        form.setGender(GENDER);
+        form.setUserNumber(NUMBER);
+        form.setDateOfBirth(BIRTH_DATE);
+        form.setSubjects(SUBJECTS);
+        form.setHobby(HOBBY);
+        form.setState(STATE);
+        form.setCity(CITY);
+        form.clickSubmit();
+
+        logger.info("Finish test");
+    }
+
+    @AfterTest
+    public void tearDown() {
+        if (driver != null) {
+            driver.quit();
         }
-    }
-
-    public void setFirstName(String firstName) {
-        WebElement el = driver.findElement(By.id("firstName"));
-        el.clear();
-        el.sendKeys(firstName);
-    }
-
-    public void setLastName(String lastName) {
-        WebElement el = driver.findElement(By.id("lastName"));
-        el.clear();
-        el.sendKeys(lastName);
-    }
-
-    public void setUserEmail(String email) {
-        WebElement el = driver.findElement(By.id("userEmail"));
-        el.clear();
-        el.sendKeys(email);
-    }
-
-    public void setGender(String gender) {
-        String xpath = "//label[text()='" + gender + "']";
-        WebElement el = driver.findElement(By.xpath(xpath));
-        // Folosim JavaScript click și scroll pentru a evita ElementClickInterceptedException
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("arguments[0].scrollIntoView(true);", el);
-        js.executeScript("arguments[0].click();", el);
-    }
-
-    public void setUserNumber(String number) {
-        WebElement el = driver.findElement(By.id("userNumber"));
-        el.clear();
-        el.sendKeys(number);
-    }
-
-    public void setDateOfBirth(String dob) {
-        WebElement dateInput = driver.findElement(By.id("dateOfBirthInput"));
-        dateInput.click();
-        dateInput.sendKeys(Keys.CONTROL + "a");
-        dateInput.sendKeys(dob);
-        dateInput.sendKeys(Keys.ENTER);
-    }
-
-    public void setSubjects(String subjects) {
-        WebElement subjectsInput = driver.findElement(By.id("subjectsInput"));
-        subjectsInput.sendKeys(subjects);
-        subjectsInput.sendKeys(Keys.ENTER);
-    }
-
-    public void setHobby(String hobby) {
-        String xpath = "//label[text()='" + hobby + "']";
-        WebElement el = driver.findElement(By.xpath(xpath));
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("arguments[0].scrollIntoView(true);", el);
-        js.executeScript("arguments[0].click();", el);
-    }
-
-    public void setState(String state) {
-        WebElement stateInput = driver.findElement(By.id("react-select-3-input"));
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("arguments[0].scrollIntoView(true);", stateInput);
-        stateInput.sendKeys(state);
-        stateInput.sendKeys(Keys.ENTER);
-    }
-
-    public void setCity(String city) {
-        WebElement cityInput = driver.findElement(By.id("react-select-4-input"));
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("arguments[0].scrollIntoView(true);", cityInput);
-        cityInput.sendKeys(city);
-        cityInput.sendKeys(Keys.ENTER);
-    }
-
-    public void clickSubmit() {
-        WebElement submitBtn = driver.findElement(By.id("submit"));
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("arguments[0].scrollIntoView(true);", submitBtn);
-        js.executeScript("arguments[0].click();", submitBtn);
     }
 }
